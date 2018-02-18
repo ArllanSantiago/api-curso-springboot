@@ -13,6 +13,7 @@ import com.arllanfelipe.cursomc.domain.Cidade;
 import com.arllanfelipe.cursomc.domain.Cliente;
 import com.arllanfelipe.cursomc.domain.Endereco;
 import com.arllanfelipe.cursomc.domain.Estado;
+import com.arllanfelipe.cursomc.domain.ItemPedido;
 import com.arllanfelipe.cursomc.domain.Pagamento;
 import com.arllanfelipe.cursomc.domain.PagamentoComBoleto;
 import com.arllanfelipe.cursomc.domain.PagamentoComCartao;
@@ -25,6 +26,7 @@ import com.arllanfelipe.cursomc.repositories.CidadeRepository;
 import com.arllanfelipe.cursomc.repositories.ClienteRepository;
 import com.arllanfelipe.cursomc.repositories.EnderecoRepository;
 import com.arllanfelipe.cursomc.repositories.EstadoRepository;
+import com.arllanfelipe.cursomc.repositories.ItemPedidoRepository;
 import com.arllanfelipe.cursomc.repositories.PagamentoRepository;
 import com.arllanfelipe.cursomc.repositories.PedidoRepository;
 import com.arllanfelipe.cursomc.repositories.ProdutoRepository;
@@ -48,6 +50,9 @@ public class CursomcApplication implements CommandLineRunner{
 	private PedidoRepository pedidoRepository;
 	@Autowired
 	private PagamentoRepository pagamentoRepository;
+	@Autowired
+	private ItemPedidoRepository itempedidorepository;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(CursomcApplication.class, args);
 	}
@@ -94,7 +99,7 @@ public class CursomcApplication implements CommandLineRunner{
 		SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy hh:mm");
 		
 		Pedido ped1 = new Pedido(null, sdf.parse("01/01/2018 10:20"), cli1, end1);
-		Pedido ped2 = new Pedido(null, sdf.parse("02/02/2018 04:15"), cli1,end4);
+		Pedido ped2 = new Pedido(null, sdf.parse("02/02/2018 04:15"), cli1,end4	);
 		
 		Pagamento pgto1 = new PagamentoComCartao(null,EstadoPagamento.QUITADO,ped1,6);
 		ped1.setPagamento(pgto1);
@@ -104,6 +109,17 @@ public class CursomcApplication implements CommandLineRunner{
 		
 		cli1.getPedidos().addAll(Arrays.asList(ped1));
 		
+		ItemPedido itemPed1 = new ItemPedido(ped1, p1, 0.00, 1, p1.getPreco());
+		ItemPedido itemPed2 = new ItemPedido(ped2, p3, 0.00, 2, p3.getPreco());
+		ItemPedido itemPed3 = new ItemPedido(ped1, p2, 0.00, 2, p2.getPreco());
+		
+		ped1.getItens().addAll(Arrays.asList(itemPed1,itemPed3));
+		ped2.getItens().addAll(Arrays.asList(itemPed2));
+		
+		p1.getItens().addAll(Arrays.asList(itemPed1));
+		p2.getItens().addAll(Arrays.asList(itemPed3));
+		p3.getItens().addAll(Arrays.asList(itemPed2));
+		
 		categoriaRepository.save(Arrays.asList(cat1, cat2));
 		produtoRepository.save(Arrays.asList(p1,p2,p3));
 		estadoRepository.save(Arrays.asList(est1,est2));
@@ -112,5 +128,6 @@ public class CursomcApplication implements CommandLineRunner{
 		enderecoRepository.save(Arrays.asList(end1,end2,end3,end4));
 		pedidoRepository.save(Arrays.asList(ped1,ped2));
 		pagamentoRepository.save(Arrays.asList(pgto1,pgto2));
+		itempedidorepository.save(Arrays.asList(itemPed1,itemPed2,itemPed3));
 	}
 }
